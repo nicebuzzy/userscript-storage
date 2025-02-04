@@ -1,0 +1,35 @@
+{
+  "name": "@nicebuzzy/userscript-storage",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "dist/userscript-storage.js",
+  "module": "dist/userscript-storage.js",
+  "browser": "dist/userscript-storage.umd.js",
+  "scripts": {
+    "test": "vitest",
+    "build": "rollup --config"
+  },
+  "author": "nicebuzzy",
+  "license": "MIT",
+  "description": "A wrapper for GM.getValue, GM.setValue, GM.deleteValue, etc.",
+  "devDependencies": {
+    "rollup": "^4.34.2",
+    "vitest": "^3.0.5"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicebuzzy/userscript-storage.git"
+  },
+  "keywords": [
+    "userscript"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/userscript-storage.js",
+      "require": "./dist/userscript-storage.umd.js"
+    }
+  }
+}
