@@ -1,5 +1,5 @@
 export default class UserscriptStorage {
-  required = [
+  static grants = [
     'GM.getValue',
     'GM.getValues',
     'GM.setValue',
@@ -10,14 +10,14 @@ export default class UserscriptStorage {
   ]
 
   constructor({ scope = null } = {}) {
-    const { script: { grant = [] } } = GM.info
+    const { script: { grant = [] } } = globalThis.GM.info
 
-    if (!this.required.every(key => grant.includes(key))) {
-      throw new Error(`@grant required: ${this.required.join(', ')}.`)
+    if (!UserscriptStorage.grants.every(key => grant.includes(key))) {
+      throw new Error(`@grant required: ${UserscriptStorage.grants.join(', ')}.`)
     }
 
     this.scope = scope
-    this.storage = GM
+    this.storage = globalThis.GM
   }
 
   get size() {
@@ -65,6 +65,27 @@ export default class UserscriptStorage {
     const object = await this.getScopeValue()
     delete object[key]
     await this.setScopeValue(object)
+  }
+
+  async insert(key, value) {
+    this.scope
+      ? await this.insertWithScope(key, value)
+      : await this.insertValue(key, value)
+  }
+
+  async insertWithScope(key, value) {
+    const object = await this.getScopeValue()
+    object[key] = this.combineValue(object[key], value)
+    await this.setScopeValue(object)
+  }
+
+  async insertValue(key, value) {
+    const object = await this.storage.getValue(key, {})
+    await this.storage.setValue(key, this.combineValue(object, value))
+  }
+
+  combineValue(target, source) {
+    return Array.isArray(target) ? [...target, ...source] : { ...target, ...source }
   }
 
   async list(scope = true) {

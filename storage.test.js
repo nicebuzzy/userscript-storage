@@ -17,26 +17,35 @@ function run(store) {
   beforeAll(async () => {
     await store.set('string', 'value')
     await store.set('object', { value: 'value' })
+    await store.set('array', [1])
   })
 
   test('set & get', async () => {
     expect(await store.get('string')).toBe('value')
     expect(await store.get('object')).toEqual({ value: 'value' })
+    expect(await store.get('array')).toEqual([1])
     expect(await store.get('notExist')).toBeUndefined()
+  })
+
+  test('insert', async () => {
+    await store.insert('object', { foo: 'bar' })
+    await store.insert('array', [2])
+    expect(await store.get('object')).toEqual({ value: 'value', foo: 'bar' })
   })
 
   test('list & scope', async () => {
     expect(await store.list()).toEqual({
       string: 'value',
-      object: { value: 'value' }
+      object: { value: 'value', foo: 'bar' },
+      array: [1, 2]
     })
   })
 
   test('size & remove', async () => {
-    expect(await store.size).toBe(2)
+    expect(await store.size).toBe(3)
     await store.remove('string')
     expect(await store.get('string')).toBeUndefined()
-    expect(await store.size).toBe(1)
+    expect(await store.size).toBe(2)
   })
 
   test('clear', async () => {
@@ -81,15 +90,7 @@ function mockgm() {
 
     info: {
       script: {
-        grant: [
-          'GM.getValue',
-          'GM.getValues',
-          'GM.setValue',
-          'GM.setValues',
-          'GM.deleteValue',
-          'GM.deleteValues',
-          'GM.listValues'
-        ]
+        grant: Storage.grants
       }
     }
   }

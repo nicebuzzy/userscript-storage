@@ -28,15 +28,17 @@ npm install @nicebuzzy/userscript-storage
 const store = new Storage()
 
 store.set('foo', 'bar')
-store.set('baz', 'qux')
+store.set('baz', { qux: 'qux' })
 
 store.get('foo') // 'bar'
-store.get('baz') // 'qux'
-store.list() // { foo: 'bar', baz: 'qux' }
+store.get('baz') // { qux: 'qux' }
+store.list() // { foo: 'bar', baz: { qux: 'qux' } }
+
+store.insert('baz', { foo: 'bar' })
+store.list() // { foo: 'bar', baz: { qux: 'qux', foo: 'bar' } }
 
 store.remove('baz')
 store.get('baz') // undefined
-store.get('baz', {}) // {}
 store.list() // { foo: 'bar' }
 
 store.clear()
@@ -107,10 +109,18 @@ Removes the specified key and its value from the storage.
 
 Adds or updates a key-value pair in the storage.
 
+#### `store.insert(key, value)`
+
+Adds values to an existing `key` whose value is an object or an array.
+
 ### Properties
 
 #### `store.size`
 
 Returns the number of keys stored.
+
+#### static `Storage.grants`
+
+A list of required `@grant` keys.
 
 ---
